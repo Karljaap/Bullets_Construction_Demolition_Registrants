@@ -7,22 +7,31 @@ from folium.plugins import MarkerCluster
 
 # Cargar el archivo CSV de datos
 DATA_PATH = "filtered_data_march_clean.csv"
+
 if not os.path.exists(DATA_PATH):
     st.error("Error: No se encontró el archivo de datos. Verifique la ruta.")
     st.stop()
 
-try:
-    df = pd.read_csv(DATA_PATH)
-except Exception as e:
-    st.error(f"Error al cargar el archivo CSV: {e}")
-    st.stop()
+
+# Cargar datos con manejo de errores
+@st.cache_data
+def load_data(path):
+    try:
+        df = pd.read_csv(path)
+        return df
+    except Exception as e:
+        st.error(f"Error al cargar el archivo CSV: {e}")
+        st.stop()
+
+
+# Cargar los datos con caché
+df = load_data(DATA_PATH)
 
 # Verificar que el CSV contenga las columnas necesarias
 required_columns = ['latitude', 'longitude', 'account_name']
-for col in required_columns:
-    if col not in df.columns:
-        st.error(f"Falta la columna requerida: {col}")
-        st.stop()
+if not all(col in df.columns for col in required_columns):
+    st.error("Faltan columnas requeridas en el archivo CSV")
+    st.stop()
 
 
 # Crear el mapa con clusters para mejorar la visualización
