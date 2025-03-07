@@ -10,9 +10,9 @@ def load_data(path):
 DATA_PATH = "filtered_data_march_clean.csv"
 df = load_data(DATA_PATH)
 
-# Crear un mapa simple
+# Crear un mapa simple con tiles válidos
 def create_map(data):
-    mapa = folium.Map(location=[data['latitude'].mean(), data['longitude'].mean()], zoom_start=10, tiles="Stamen Terrain")
+    mapa = folium.Map(location=[data['latitude'].mean(), data['longitude'].mean()], zoom_start=10, tiles="OpenStreetMap")
     return mapa
 
 # Mostrar el mapa en Streamlit
