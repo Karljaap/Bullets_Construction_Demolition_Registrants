@@ -54,14 +54,6 @@ def create_map(data):
 st.title("Interactive Map Dashboard")
 st.write("Visualización de datos con ubicaciones geográficas.")
 
-# Mostrar el mapa y los datos en pestañas
-tabs = st.tabs(["Mapa", "Datos"])
-
-with tabs[0]:
-    st.write("Mapa de Ubicaciones:")
-    mapa = create_map(df)
-    st_folium(mapa, width=700, height=500)
-
-with tabs[1]:
-    st.write("Tabla de Datos:")
-    st.dataframe(df)
+# Mostrar solo el mapa interactivo
+mapa = create_map(df)
+st_folium(mapa, width=700, height=500)
