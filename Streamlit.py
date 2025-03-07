@@ -48,10 +48,10 @@ DATA_PATH = "filtered_data_march_clean.csv"
 df = load_data(DATA_PATH)
 
 
-# Create a map with labels including name, latitude, and longitude
+# Create a map focused on New York City with labels including name, latitude, and longitude
 def create_map(data):
-    mapa = folium.Map(location=[data['latitude'].mean(), data['longitude'].mean()], zoom_start=10,
-                      tiles="OpenStreetMap")
+    nyc_coordinates = [40.7128, -74.0060]  # Center of New York City
+    mapa = folium.Map(location=nyc_coordinates, zoom_start=12, tiles="OpenStreetMap")
 
     for _, row in data.iterrows():
         folium.Marker(
@@ -64,5 +64,5 @@ def create_map(data):
 
 
 # Display the map in Streamlit
-st.title("Interactive Map with Labels")
+st.title("Interactive Map of NYC with Labels")
 st_folium(create_map(df), width=700, height=500)
