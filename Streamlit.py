@@ -8,7 +8,7 @@ from streamlit_folium import st_folium
 This dataset contains information about companies registered by the Business Integrity Commission (BIC) to collect and dispose of waste materials resulting exclusively from demolition, construction, alterations, or excavations in New York City.
 Each record represents an entity approved to operate under the classification of Class 2 C&D Registrants. The information is updated daily and has been publicly available since April 4, 2017.
 
-# Columns Name - Dictionary Column
+# Dictionary Column
 | **Column Name**      | **Description**                                          | **API Field Name**    | **Data Type**        |
 |----------------------|----------------------------------------------------------|----------------------|----------------------|
 | **CREATED**          | Timestamp of when data is processed for OpenData         | `created`            | Floating Timestamp  |
