@@ -2,6 +2,9 @@ import os
 import streamlit as st
 import pandas as pd
 import requests
+import folium
+from folium.plugins import MarkerCluster
+from streamlit_folium import st_folium
 from concurrent.futures import ThreadPoolExecutor
 from io import StringIO
 
@@ -12,6 +15,7 @@ st.set_page_config(page_title="NYC Incident Report Data", layout="wide")
 BASE_URL = "https://data.cityofnewyork.us/resource/cspg-yi7g.csv?$query="
 QUERY_TEMPLATE = "SELECT created, account_name, latitude, longitude WHERE created >= '{start_date}' AND created <= '{end_date}' ORDER BY created DESC NULL FIRST"
 LIMIT = 5000  # Número de registros por solicitud
+
 
 # Función para obtener datos con paginación y filtrado por fecha
 def fetch_data(offset, start_date, end_date):
@@ -25,6 +29,7 @@ def fetch_data(offset, start_date, end_date):
     except Exception as e:
         print(f"Error fetching data at offset {offset}: {e}")
         return None
+
 
 # Función principal para recuperar y consolidar los datos
 def get_filtered_data(start_date, end_date):
@@ -45,8 +50,9 @@ def get_filtered_data(start_date, end_date):
     print(f"Total records retrieved: {len(data)}")
     return data
 
+
 # Pestañas
-tab1, tab2, tab3, tab4 = st.tabs(["Data Retrieval", "Filtered Data", "Analysis", "References"])
+tab1, tab2, tab3, tab4 = st.tabs(["Data Retrieval", "Filtered Data", "Map Visualization", "References"])
 
 with tab1:
     st.markdown("""
@@ -74,9 +80,34 @@ with tab2:
 
 with tab3:
     st.markdown("""
-    ## Analysis
-    This section can include further analysis and visualizations of the data.
+    ## Map Visualization
+    The following map displays the incident locations.
     """)
+    if "filtered_data" in st.session_state and st.session_state["filtered_data"] is not None:
+        filtered_data = st.session_state["filtered_data"]
+        filtered_data_clean = filtered_data.dropna(subset=['latitude', 'longitude'])
+
+        if not filtered_data_clean.empty:
+            map_center = [filtered_data_clean['latitude'].mean(), filtered_data_clean['longitude'].mean()]
+            mymap = folium.Map(location=map_center, zoom_start=12)
+            marker_cluster = MarkerCluster().add_to(mymap)
+
+            for _, row in filtered_data_clean.iterrows():
+                folium.CircleMarker(
+                    location=[row['latitude'], row['longitude']],
+                    radius=8,
+                    color='red',
+                    fill=True,
+                    fill_color='red',
+                    fill_opacity=0.6,
+                    popup=f"Account: {row['account_name']}<br>Created: {row['created']}"
+                ).add_to(marker_cluster)
+
+            st_folium(mymap, width=800, height=600)
+        else:
+            st.write("No data available for mapping.")
+    else:
+        st.write("No data found for the selected date range.")
 
 with tab4:
     st.markdown("""
